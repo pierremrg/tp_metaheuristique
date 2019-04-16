@@ -10,10 +10,12 @@ def printJSON(data):
 
 
 filename = "exemple_cours.txt"
+filename_solution = "exemple_cours_solution.txt"
 
 [evacuationInfo, graph] = parser.parseData(filename)
+evac_plan = solution_parser.parseData(filename_solution)
 
-printJSON(graph)
+printJSON(evac_plan)
 
 
 
