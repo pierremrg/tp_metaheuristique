@@ -8,8 +8,17 @@ class Bornes:
 
 	# Pour calculer une borne inférieure :
 	#	- on calcule le temps d'évacuation de chaque sommet comme s'il était seul
-	#	- on prend le max de tous ces temps d'évacuation
+	#	- on prend le max de tous ces temps d'évacuation 
 	def borneInf(self, verbose = False):
+		return max(self.calculTempsEvacuation(verbose))
+
+	# Pour calculer une borne supérieure :
+	#	- on calcule le temps d'évacuation de chaque sommet comme s'il était seul
+	#	- on prend le total de tous ces temps d'évacuation (chaque sommet s'évacue un par un)
+	def borneSup(self, verbose = False):
+		return sum(self.calculTempsEvacuation(verbose))
+
+	def calculTempsEvacuation(self, verbose = False):
 
 		times = []
 		# pour tous les noeuds à évacuer
@@ -97,7 +106,7 @@ class Bornes:
 
 			times.append(time)
 		
-		return max(times)
+		return times
 
 
 

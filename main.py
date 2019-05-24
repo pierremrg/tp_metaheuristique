@@ -29,7 +29,8 @@ solution_ok = checker.check(DEBUG)
 
 # Calcul des bornes
 bornes = Bornes(evacuation_info, graph)
-print(bornes.borneInf())
+print("Borne inférieure : " + str(bornes.borneInf()))
+print("Borne supérieure : " + str(bornes.borneSup()))
 
 
 print(solution_ok)
