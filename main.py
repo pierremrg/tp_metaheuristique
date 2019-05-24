@@ -34,4 +34,4 @@ print(bornes.borneInf())
 
 print(solution_ok)
 
-printJSON(graph)
+# printJSON(graph)

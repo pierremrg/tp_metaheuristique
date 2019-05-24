@@ -9,13 +9,14 @@ class Bornes:
 	# Pour calculer une borne inférieure :
 	#	- on calcule le temps d'évacuation de chaque sommet comme s'il était seul
 	#	- on prend le max de tous ces temps d'évacuation
-	def borneInf(self):
+	def borneInf(self, verbose = False):
 
 		times = []
 		# pour tous les noeuds à évacuer
 		for nodeId in self.evacuationInfo:
-			print("\n\n\n\n")
-			print("Je fais le noeud " + nodeId)
+			if verbose:
+				print("\n\n\n\n")
+				print("Je fais le noeud " + nodeId)
 			# arcs[node] est l'arc qui mène à node
 			arcs = {}
 			# le nombre de personnes à évacuer
@@ -43,14 +44,15 @@ class Bornes:
 
 			# on comptera les pas de temps
 			time = 0
-
-			print(predecesseurs)
+			if verbose:
+				print(predecesseurs)
 			# tant qu'on a pas sauvé tout le monde
 			while nbSauves < nbAEvacuer: # and attentesSommet[nodeId] > 0:
-				print("Il reste " + str(attentesSommet[nodeId]) + " personnes à evacuer")
-				print(str(nbSauves) + " sont déjà arrivées")
-				print("Les arcs " + str(arcs))
-				print("En attente aux sommets avant : " + str(attentesSommet))
+				if verbose:
+					print("Il reste " + str(attentesSommet[nodeId]) + " personnes à evacuer")
+					print(str(nbSauves) + " sont déjà arrivées")
+					print("Les arcs " + str(arcs))
+					print("En attente aux sommets avant : " + str(attentesSommet))
 				time += 1
 				isFirst = True
 
@@ -83,16 +85,19 @@ class Bornes:
 							nbQuiPart = int(self.getArc(predecesseurs[node], node)["capacity"])
 						else:
 							nbQuiPart = int(attentesSommet[predecesseurs[node]])
-						print("On fait partir : " + str(nbQuiPart) + " de " + predecesseurs[node])
+						if verbose:
+							print("On fait partir : " + str(nbQuiPart) + " de " + predecesseurs[node])
 						# on envoit le nombre de personne dans le premier espace du couloir
 						arcs[node][0] = nbQuiPart
 						# les personnes que l'on vient d'envoyer n'attendent plus
 						attentesSommet[predecesseurs[node]] -= nbQuiPart
-				print("En attente aux sommets après : " + str(attentesSommet))
-				print("-----------")
+				if verbose:
+					print("En attente aux sommets après : " + str(attentesSommet))
+					print("-----------")
 
 			times.append(time)
-		return times
+		
+		return max(times)
 
 
 
