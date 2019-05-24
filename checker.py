@@ -169,7 +169,7 @@ class Checker:
 
 			if verbose:
 				print('Time: ' + str(t+1) + ' - Capacities OK: ' + str(capacities_ok))
-				printJSON(times)
+				printJSON(self.times)
 
 		return (capacities_ok and self.check_room_is_empty())
 

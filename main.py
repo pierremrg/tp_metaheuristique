@@ -9,6 +9,8 @@ from checker import Checker
 def printJSON(data):
 	print(json.dumps(data, indent=2))
 
+# Variable de debug
+DEBUG = False
 
 # Noms des fichiers à utiliser
 EVACUATION_FILEPATH = "exemple_cours.txt"
@@ -23,6 +25,8 @@ infos_solution = solution_parser.parseData()
 
 # Checker de solution
 checker = Checker(evacuation_info, graph, infos_solution)
-solution_ok = checker.check()
+solution_ok = checker.check(DEBUG)
 
 print(solution_ok)
+
+printJSON(graph)
