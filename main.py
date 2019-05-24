@@ -1,9 +1,9 @@
 import json
 
-import parser
 from evacuation_parser import EvacuationParser
 from solution_parser import SolutionParser
 from checker import Checker
+from bornes import Bornes
 
 
 def printJSON(data):
@@ -24,5 +24,10 @@ infos_solution = solution_parser.parseData()
 # Checker de solution
 checker = Checker(evacuation_info, graph, infos_solution)
 solution_ok = checker.check()
+
+# Calcul des bornes
+bornes = Bornes(evacuation_info, graph)
+print(bornes.borneInf())
+
 
 print(solution_ok)
