@@ -105,7 +105,8 @@ class Bornes:
 					print("-----------")
 
 			times.append(time)
-		
+		if verbose:
+			print("Les temps : " + str(times))
 		return times
 
 
