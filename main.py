@@ -4,6 +4,7 @@ import sys
 from evacuation_parser import EvacuationParser
 from solution_parser import SolutionParser
 from checker import Checker
+from simulator import Simulator
 from bornes import Bornes
 
 
@@ -28,6 +29,7 @@ infos_solution = solution_parser.parseData()
 # Checker de solution
 checker = Checker(evacuation_info, graph, infos_solution)
 solution_ok = checker.check(DEBUG)
+print(solution_ok)
 
 # Calcul des bornes
 bornes = Bornes(evacuation_info, graph)
@@ -35,6 +37,17 @@ print("Borne inférieure : " + str(bornes.borneInf(DEBUG)))
 print("Borne supérieure : " + str(bornes.borneSup(DEBUG)))
 
 
-print(solution_ok)
 
-# printJSON(graph)
+
+
+
+# Simulation d'une solution
+start_dates =  {}
+rates = {}
+for node in infos_solution['evacuation_plan']:
+	start_dates[node['id_node']] = node['start_date']
+	rates[node['id_node']] = node['evacuation_rate']
+
+simulator = Simulator(evacuation_info, graph, start_dates, rates)
+duration = simulator.simulate()
+print(duration)

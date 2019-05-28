@@ -1,43 +1,6 @@
 """
-"instant" entre 0 et temps_max (37)
-Vérifier que la capacité de chaque arc est respectée à chaque instant
-Vérifier que le duedate est respecté
-"""
-
-"""
-############# PSEUDO-CODE DE L'ALGORITHME DU CHECKER #############
-
-vecteur remaining_number
-= nombre de personnes restant à envoyer depuis chaque noeud
-	ne prend pas en compte les noeuds intermédiaires !
-
-vecteur stock_tmp
-= ce que chaque noeud a reçu de ses prev et qu'il doit propager
-
-vecteur arc
-= autant de cases que d'instants de temps
-	chaque case contient le nombre de personnes à cet instant
-
-Propagate :
-
-Pour chaque noeud current --> prendre le terminal
-	stock_tmp[current] = 0
-
-	Récupérer précédents
-	Si précédents:
-		pour chaque précédent:
-			cap_ok = cap_ok && propagate(prev)
-
-	# ici : préc déjà propagés
-	# on commence la propagation de ce noeud
-	arc = arc_sortant
-	dest = dest de arc
-	stock_tmp[dest] += arc[LAST]
-	avancer toutes les valeurs à l'instant suivant sur arc
-	arc[FIRST] = combien on doit envoyer (remaining_number[current] + 
-		stock_tmp[current] + prendre en compte date de début d'envoi)
-	vérifier que cap pas dépassée sur chaque instant de l'arc
-	retourner le résultat du test
+Class Simulator
+Permet de simuler l'évacuation des personnes
 """
 
 import json
@@ -59,19 +22,26 @@ def printArray(data):
 End functions
 """
 
-class Checker:
+"""
+Pour chaque noeud :
+- dates de départ
+- débits
 
-	# Initialise tout ce qui est nécessaire pour le checker
-	def __init__(self, evacuation_info, graph, infos_solution):
+
+"""
+
+class Simulator:
+
+	# Initialise tout ce qui est nécessaire pour le simulateur
+	def __init__(self, evacuation_info, graph, start_dates, rates):
 		self.evacuation_info = evacuation_info
-		printJSON(evacuation_info)
-		printJSON(infos_solution)
 		self.graph = graph
-		self.infos_solution = infos_solution
+		self.start_dates = start_dates
+		self.rates = rates
 
-		self.maxTime = self.infos_solution['objectif']
-		self.evac_solution = self.infos_solution['evacuation_plan']
-
+		# has_started : indique si le processus d'évacuation a commencé
+		# (pour ne pas considérer que l'évacutation est terminée dès le début)
+		self.has_started = False
 
 		# times : dict
 		# De la forme [A][B] = [<instants> instants possibles]
@@ -90,6 +60,8 @@ class Checker:
 		# Contient pour chaque sommet à évacuer le nombre de personnes restantes
 		self.remaining_people = {}
 
+
+		############## TRAITEMENT PREALABLE SUR TOUS LES NOEUDS DU GRAPH ###############
 
 		for node in self.graph:
 
@@ -112,7 +84,6 @@ class Checker:
 			self.remaining_people[node] = int(self.evacuation_info[node]['population'])
 
 
-	############## TRAITEMENT PREALABLE SUR TOUS LES NOEUDS DU GRAPH ###############
 
 	# Retourne la liste des noeuds précédents d'un noeud
 	def getPreviousNodes(self, current_node_id):
@@ -149,13 +120,14 @@ class Checker:
 		return None
 
 
-	# Retourne True si la solution est valide
-	# False sinon
+	# Simule l'évacuation des personnes
+	# Retourne la durée totale nécessaire pour l'évacuation de toutes les personnes
 	# Si verbose = True, affichage du debug
-	def check(self, verbose = False):
-		capacities_ok = True
+	def simulate(self, verbose = False):
 
-		for t in range(self.maxTime):
+		t = 0
+
+		while not self.has_started or (self.has_started and not self.check_room_is_empty()):
 
 			# Reset des stocks temporaires
 			for node in self.graph:
@@ -164,15 +136,13 @@ class Checker:
 			last_node = self.evacuation_info[list(self.evacuation_info.keys())[0]]['path'][-1]
 			self.propagate(last_node, t)
 
-			if not self.check_quantities():
-				capacities_ok = False
-
 			if verbose:
-				print('Time: ' + str(t+1) + ' - Capacities OK: ' + str(capacities_ok))
+				print('Time: ' + str(t+1))
 				printJSON(self.times)
 
-		return (capacities_ok and self.check_room_is_empty())
+			t += 1
 
+		return t
 
 	# propage vers l'arc sortant
 	# retourne la quantité sortie de l'arc (arrivée au noeud suivant)
@@ -210,23 +180,19 @@ class Checker:
 
 		if node_id in self.remaining_people:
 
-			# On récupère l'index dans evac_solution
-			index = 0
-			for node in self.evac_solution:
-				if node['id_node'] == node_id:
-					break
-				index +=1
-			index = int(index)
-
-			if t >= int(self.evac_solution[index]['start_date']):
+			if t >= int(self.start_dates[node_id]):
 				tmp1 = self.remaining_people[node_id]
-				tmp2 = int(self.evac_solution[index]['evacuation_rate'])
+				tmp2 = int(self.rates[node_id])
 				qty = min(tmp1, tmp2)
 
 				number += qty
 				self.remaining_people[node_id] -= qty
 
 		number += self.stock_tmp[node_id]
+
+		# Indique qu'on a commencé à évacuer
+		if number > 0:
+			self.has_started = True
 
 		return number
 
@@ -245,21 +211,6 @@ class Checker:
 					return True
 
 		return False
-
-
-	# Retourne True si toutes les quantités sont respectées
-	# sur tous les chemins à l'instant actuel, False sinon
-	def check_quantities(self):
-		for node in self.times:
-			for dest in self.times[node]:
-				quantities = self.times[node][dest]
-
-				for q in quantities:
-					if q > int(self.graph[node][dest]['capacity']):
-						return False;
-
-		return True;
-
 
 	# Retourne True si tous les chemins sont vides
 	# à l'instant actuel, False sinon
