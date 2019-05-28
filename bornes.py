@@ -1,3 +1,4 @@
+import time as t
 
 class Bornes:
 
@@ -10,17 +11,85 @@ class Bornes:
 	#	- on calcule le temps d'évacuation de chaque sommet comme s'il était seul
 	#	- on prend le max de tous ces temps d'évacuation 
 	def borneInf(self, verbose = False):
-		return max(self.calculTempsEvacuation(verbose))
+
+		# Les temps d'évacuation pour tous les sommets
+		[times, infos] = self.calculTempsEvacuation(verbose)
+
+		# génération du fichier de solutions
+		f = open("generated_files/borneInf_solution", "w+")
+		#Nom de l'instance
+		f.write("instance_name\n")
+		#Nombre de sommets à évacuer
+		f.write(str(len(times)) + "\n");
+		#pour chaque sommet
+		for node in infos["nodes"]:
+			# <noeud> <débit> 0; on met 0 car tous les noeuf partent en même temps   
+			f.write(node + " " + str(infos["nodes"][node]["evac_rate"]) + " 0\n")
+		# valid ou invalid, ici la borneInf est non valide
+		f.write("invalid\n")
+		# valeur de la fonction objectif
+		f.write(str(max(times)) + "\n")
+		# temps d'éxecution
+		f.write(str( infos["execution_time"])+ "\n")
+		# Méthode
+		f.write( "Borne inférieure" + "\n")
+		# Commentaire
+		f.write("Tout le monde évacue à t=0")
+
+		# borne inf = max de tous les temps d'évac
+		return max(times)
+
+
+
+
+
+
 
 	# Pour calculer une borne supérieure :
 	#	- on calcule le temps d'évacuation de chaque sommet comme s'il était seul
 	#	- on prend le total de tous ces temps d'évacuation (chaque sommet s'évacue un par un)
 	def borneSup(self, verbose = False):
-		return sum(self.calculTempsEvacuation(verbose))
+		# Les temps d'évacuation pour tous les sommets
+		[times, infos] = self.calculTempsEvacuation(verbose)
+
+		# génération du fichier de solutions
+		f = open("generated_files/borneSup_solution", "w+")
+		#Nom de l'instance
+		f.write("instance_name\n")
+		#Nombre de sommets à évacuer
+		f.write(str(len(times)) + "\n");
+		#calcul des temps de départ
+		date_depart = 0
+		i = 0
+		#pour chaque sommet
+		for node in infos["nodes"]:
+			# <noeud> <débit> 0; on met 0 car tous les noeuf partent en même temps   
+			f.write(node + " " + str(infos["nodes"][node]["evac_rate"]) + " " + str(date_depart) + "\n")
+			date_depart += times[i]
+			i += 1
+
+		# valid ou invalid, ici la borneInf est non valide
+		f.write("invalid\n")
+		# valeur de la fonction objectif
+		f.write(str(sum(times)) + "\n")
+		# temps d'éxecution
+		f.write(str( infos["execution_time"])+ "\n")
+		# Méthode
+		f.write( "Borne inférieure" + "\n")
+		# Commentaire
+		f.write("Tout le monde évacue à t=0")
+
+		# borne sup = somme de tous les temps d'évac
+		return sum(times)
 
 	def calculTempsEvacuation(self, verbose = False):
-
+		# les infos nécessaires pour construire le fichier
+		infos = {}
+		infos["nodes"] = {}
+	
 		times = []
+
+		start_time = t.time()
 		# pour tous les noeuds à évacuer
 		for nodeId in self.evacuationInfo:
 			if verbose:
@@ -49,12 +118,14 @@ class Bornes:
 				attentesSommet[node] = 0
 				lastNode = node
 
-
-
 			# on comptera les pas de temps
 			time = 0
 			if verbose:
 				print(predecesseurs)
+
+			# on envoit le max de personne d'un coup = capacité du premier arc
+			evac_rate = int(self.getArc(nodeId, self.evacuationInfo[nodeId]["path"][0])["capacity"])
+
 			# tant qu'on a pas sauvé tout le monde
 			while nbSauves < nbAEvacuer: # and attentesSommet[nodeId] > 0:
 				if verbose:
@@ -87,7 +158,7 @@ class Bornes:
 
 					# pour le premier espace du couloir menant au noeud
 					nbQuiPart = 0
-					# Si on est pas sur le dernier noeud (on en voit plus si on y est)
+					# Si on est pas sur le dernier noeud (on envoit plus si on y est)
 					if predecesseurs[node] != lastNode:
 						#si on a du monde en attente au sommet d'avant
 						if (int(attentesSommet[predecesseurs[node]]) > int(self.getArc(predecesseurs[node], node)["capacity"])):
@@ -105,9 +176,14 @@ class Bornes:
 					print("-----------")
 
 			times.append(time)
+			infos["nodes"][nodeId] = {}	
+			infos["nodes"][nodeId]["evac_rate"] = evac_rate
+		
+		infos["execution_time"] = t.time() - start_time
 		if verbose:
 			print("Les temps : " + str(times))
-		return times
+
+		return [times, infos]
 
 
 

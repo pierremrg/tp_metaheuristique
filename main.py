@@ -12,6 +12,7 @@ def printJSON(data):
 	print(json.dumps(data, indent=2))
 
 
+
 # Variable de debug
 DEBUG = True if len(sys.argv) > 1 and sys.argv[1] == "-v" else False
 
@@ -35,8 +36,6 @@ print(solution_ok)
 bornes = Bornes(evacuation_info, graph)
 print("Borne inférieure : " + str(bornes.borneInf(DEBUG)))
 print("Borne supérieure : " + str(bornes.borneSup(DEBUG)))
-
-
 
 
 
