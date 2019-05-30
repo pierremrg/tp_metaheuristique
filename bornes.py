@@ -52,6 +52,10 @@ class Bornes:
 		# Les temps d'évacuation pour tous les sommets
 		[times, infos] = self.calculTempsEvacuation(verbose)
 
+		# Calcul de la borne supérieure :
+		#	Somme de toutes les évacuations comme si elles étaient faites les unes après les autres
+		#	on enlève len(times-1) pour éviter d'avoir un pas de temps ou personne n'évacue 
+		#	(le moment entre l'arrivée d'un sommet et le départ du suivant)
 		borne = sum(times)-(len(times)-1)
 
 		# génération du fichier de solutions
