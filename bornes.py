@@ -52,6 +52,8 @@ class Bornes:
 		# Les temps d'évacuation pour tous les sommets
 		[times, infos] = self.calculTempsEvacuation(verbose)
 
+		borne = sum(times)-(len(times)-1)
+
 		# génération du fichier de solutions
 		f = open("generated_files/borneSup_solution.txt", "w+")
 		#Nom de l'instance
@@ -69,9 +71,9 @@ class Bornes:
 			i += 1
 
 		# valid ou invalid, ici la borneInf est non valide
-		f.write("invalid\n")
+		f.write("valid\n")
 		# valeur de la fonction objectif
-		f.write(str(sum(times)) + "\n")
+		f.write(str(borne) + "\n")
 		# temps d'éxecution
 		f.write(str( infos["execution_time"])+ "\n")
 		# Méthode
@@ -79,8 +81,7 @@ class Bornes:
 		# Commentaire
 		f.write("Chaque noeud évacue l'un après l'autre")
 
-		# borne sup = somme de tous les temps d'évac
-		return sum(times)
+		return borne
 
 	def calculTempsEvacuation(self, verbose = False):
 		# les infos nécessaires pour construire le fichier

@@ -64,8 +64,6 @@ class Checker:
 	# Initialise tout ce qui est nécessaire pour le checker
 	def __init__(self, evacuation_info, graph, infos_solution):
 		self.evacuation_info = evacuation_info
-		printJSON(evacuation_info)
-		printJSON(infos_solution)
 		self.graph = graph
 		self.infos_solution = infos_solution
 
