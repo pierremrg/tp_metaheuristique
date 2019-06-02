@@ -1,7 +1,9 @@
 import time as t
+import os
+
+OUTPUT_DIR = 'generated_files/'
 
 class Bornes:
-
 
 	def __init__(self, evacuationInfo, graph):
 		self.evacuationInfo = evacuationInfo
@@ -16,7 +18,11 @@ class Bornes:
 		[times, infos] = self.calculTempsEvacuation(verbose)
 
 		# génération du fichier de solutions
-		f = open("generated_files/borneInf_solution.txt", "w+")
+
+		if not os.path.isdir(OUTPUT_DIR):
+			os.mkdir(OUTPUT_DIR)
+
+		f = open(OUTPUT_DIR + "borneInf_solution.txt", "w+")
 		#Nom de l'instance
 		f.write("instance_name\n")
 		#Nombre de sommets à évacuer

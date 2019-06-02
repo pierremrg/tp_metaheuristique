@@ -15,10 +15,12 @@ def printJSON(data):
 
 # Variable de debug
 DEBUG = True if len(sys.argv) > 1 and sys.argv[1] == "-v" else False
+DEBUG_SIMULATION = False
 
-# Noms des fichiers à utiliser
+# Noms des fichiers à utiliser -- TODO Rajouter une option dans le terminal pour sélectionner le fichier
 EVACUATION_FILEPATH = "exemple_cours.txt"
-SOLUTION_FILEPATH = "exemple_cours_solution.txt"
+# SOLUTION_FILEPATH = "exemple_cours_solution.txt"
+SOLUTION_FILEPATH = "generated_files/borneSup_solution.txt"
 
 # Parsers
 evacuation_parser = EvacuationParser(EVACUATION_FILEPATH)
@@ -48,5 +50,5 @@ for node in infos_solution['evacuation_plan']:
 	rates[node['id_node']] = node['evacuation_rate']
 
 simulator = Simulator(evacuation_info, graph, start_dates, rates)
-duration = simulator.simulate()
+duration = simulator.simulate(DEBUG_SIMULATION)
 print(duration)

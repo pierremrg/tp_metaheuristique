@@ -39,10 +39,6 @@ class Simulator:
 		self.start_dates = start_dates
 		self.rates = rates
 
-		# has_started : indique si le processus d'évacuation a commencé
-		# (pour ne pas considérer que l'évacutation est terminée dès le début)
-		self.has_started = False
-
 		# times : dict
 		# De la forme [A][B] = [<instants> instants possibles]
 		# Pour un arc de A vers B, ayant <instants> instants de traversée
@@ -127,7 +123,7 @@ class Simulator:
 
 		t = 0
 
-		while not self.has_started or (self.has_started and not self.check_room_is_empty()):
+		while self.check_still_remaining_people() or not self.check_room_is_empty():
 
 			# Reset des stocks temporaires
 			for node in self.graph:
@@ -137,7 +133,9 @@ class Simulator:
 			self.propagate(last_node, t)
 
 			if verbose:
-				print('Time: ' + str(t+1))
+				is_empty = self.check_room_is_empty()
+
+				print('Time: ' + str(t+1) + ' (Room empty: ' + str(is_empty) + ')')
 				printJSON(self.times)
 
 			t += 1
@@ -190,10 +188,6 @@ class Simulator:
 
 		number += self.stock_tmp[node_id]
 
-		# Indique qu'on a commencé à évacuer
-		if number > 0:
-			self.has_started = True
-
 		return number
 
 
@@ -224,3 +218,10 @@ class Simulator:
 						return False;
 
 		return True
+
+	def check_still_remaining_people(self):
+		for node in self.evacuation_info:
+			if self.remaining_people[node] > 0:
+				return True
+
+		return False
