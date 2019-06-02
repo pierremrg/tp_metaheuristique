@@ -69,9 +69,9 @@ class Bornes:
 		i = 0
 		#pour chaque sommet
 		for node in infos["nodes"]:
-			# <noeud> <débit> 0; on met 0 car tous les noeuf partent en même temps   
+			# <noeud> <débit> <date_depart>;   
 			f.write(node + " " + str(infos["nodes"][node]["evac_rate"]) + " " + str(date_depart) + "\n")
-			date_depart += times[i]
+			date_depart += times[i] -1
 			i += 1
 
 		# valid ou invalid, ici la borneInf est non valide
