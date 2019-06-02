@@ -6,6 +6,7 @@ from solution_parser import SolutionParser
 from checker import Checker
 from simulator import Simulator
 from bornes import Bornes
+from local_search import LocalSearch
 
 
 def printJSON(data):
@@ -51,4 +52,30 @@ for node in infos_solution['evacuation_plan']:
 
 simulator = Simulator(evacuation_info, graph, start_dates, rates)
 duration = simulator.simulate(DEBUG_SIMULATION)
-print(duration)
+print("Simulation borne supérieure" + str(duration))
+
+print("Premier intensification : ")
+intensification = LocalSearch(evacuation_info, graph, start_dates, rates).intensification()
+print(intensification)
+print("Meilleur résultat après un multistart : ")
+diversification = LocalSearch(evacuation_info, graph, start_dates, rates).diversification()
+print(diversification)
+print("Encore un multistart, mais diversification en partant de la solution précedente : ")
+diversification = LocalSearch(evacuation_info, graph, diversification["start_dates"], diversification["rates"]).diversification()
+print(diversification)
+
+print("Encore un multistart, mais diversification en partant de la solution précedente : ")
+diversification = LocalSearch(evacuation_info, graph, diversification["start_dates"], diversification["rates"]).diversification()
+print(diversification)
+
+print("Encore un multistart, mais diversification en partant de la solution précedente : ")
+diversification = LocalSearch(evacuation_info, graph, diversification["start_dates"], diversification["rates"]).diversification()
+print(diversification)
+
+print("Encore un multistart, mais diversification en partant de la solution précedente : ")
+diversification = LocalSearch(evacuation_info, graph, diversification["start_dates"], diversification["rates"]).diversification()
+print(diversification)
+
+print("Encore un multistart, mais diversification en partant de la solution précedentes : ")
+diversification = LocalSearch(evacuation_info, graph, diversification["start_dates"], diversification["rates"]).diversification()
+print(diversification)
