@@ -54,28 +54,20 @@ simulator = Simulator(evacuation_info, graph, start_dates, rates)
 duration = simulator.simulate(DEBUG_SIMULATION)
 print("Simulation borne supérieure" + str(duration))
 
-print("Premier intensification : ")
-intensification = LocalSearch(evacuation_info, graph, start_dates, rates).intensification()
-print(intensification)
-print("Meilleur résultat après un multistart : ")
+
+print(Simulator(evacuation_info, graph, {'1':8, '2':7, '3':7}, {'1':8, '2':5, '3':3}).simulate())
+print(Simulator(evacuation_info, graph, {'1':7, '2':7, '3':8}, {'1':8, '2':5, '3':3}).simulate())
+
+
+
+
+
+
+# print("Premier intensification : ")
+# intensification = LocalSearch(evacuation_info, graph, start_dates, rates).intensification()
+# print(str(intensification))
+
 diversification = LocalSearch(evacuation_info, graph, start_dates, rates).diversification()
-print(diversification)
-print("Encore un multistart, mais diversification en partant de la solution précedente : ")
-diversification = LocalSearch(evacuation_info, graph, diversification["start_dates"], diversification["rates"]).diversification()
-print(diversification)
-
-print("Encore un multistart, mais diversification en partant de la solution précedente : ")
-diversification = LocalSearch(evacuation_info, graph, diversification["start_dates"], diversification["rates"]).diversification()
-print(diversification)
-
-print("Encore un multistart, mais diversification en partant de la solution précedente : ")
-diversification = LocalSearch(evacuation_info, graph, diversification["start_dates"], diversification["rates"]).diversification()
-print(diversification)
-
-print("Encore un multistart, mais diversification en partant de la solution précedente : ")
-diversification = LocalSearch(evacuation_info, graph, diversification["start_dates"], diversification["rates"]).diversification()
-print(diversification)
-
-print("Encore un multistart, mais diversification en partant de la solution précedentes : ")
-diversification = LocalSearch(evacuation_info, graph, diversification["start_dates"], diversification["rates"]).diversification()
-print(diversification)
+while 1:
+	diversification = LocalSearch(evacuation_info, graph, diversification['start_dates'], diversification['rates']).diversification()
+	print(diversification)
