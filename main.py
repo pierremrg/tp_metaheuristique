@@ -40,34 +40,33 @@ bornes = Bornes(evacuation_info, graph)
 print("Borne inférieure : " + str(bornes.borneInf(DEBUG)))
 print("Borne supérieure : " + str(bornes.borneSup(DEBUG)))
 
-
-
-
-# Simulation d'une solution
 start_dates =  {}
 rates = {}
 for node in infos_solution['evacuation_plan']:
 	start_dates[node['id_node']] = node['start_date']
 	rates[node['id_node']] = node['evacuation_rate']
 
+
+""" A DECOMMENTER POUR TESTER DES SIMULATIONS
+# Simulation d'une solution
 simulator = Simulator(evacuation_info, graph, start_dates, rates)
 duration = simulator.simulate(DEBUG_SIMULATION)
 print("Simulation borne supérieure" + str(duration))
 
-
 print(Simulator(evacuation_info, graph, {'1':8, '2':7, '3':7}, {'1':8, '2':5, '3':3}).simulate())
 print(Simulator(evacuation_info, graph, {'1':7, '2':7, '3':8}, {'1':8, '2':5, '3':3}).simulate())
 
+"""
 
 
+""" A DECOMMENTER POUR TESTER UNE INTENSIFICATION A PARTIR DE LA BORNE SUPERIEURE
+print("Test intensification : ")
+intensification = LocalSearch(evacuation_info, graph, start_dates, rates).intensification()
+print(str(intensification))
+"""
 
 
-
-# print("Premier intensification : ")
-# intensification = LocalSearch(evacuation_info, graph, start_dates, rates).intensification()
-# print(str(intensification))
-
-diversification = LocalSearch(evacuation_info, graph, start_dates, rates).diversification()
-while 1:
+# test de 10 diversifications
+for i in range(0, 10):
 	diversification = LocalSearch(evacuation_info, graph, diversification['start_dates'], diversification['rates']).diversification()
-	print(diversification)
+	print("Diversification " + str(i) + " : " + str(diversification))
