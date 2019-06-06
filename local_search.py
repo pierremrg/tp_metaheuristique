@@ -6,6 +6,9 @@ from checker import Checker
 
 class LocalSearch:
 
+	# le nombre de diversifications autorisées
+	MAX_TRIES = 10
+
 	def __init__(self, evacuation_info, graph, start_dates, rates):
 		self.evacuation_info = evacuation_info
 		self.graph = graph
@@ -27,7 +30,7 @@ class LocalSearch:
 		# Pour toutes les start_dates
 		for current_sd in self.start_dates:
 			# On fera des pas de 2 entre -6 et +6
-			for i in range(-5, 5, 2):
+			for i in range(-6, 6, 2):
 				# Si la nouvelle start_date est > 0
 				if int(self.start_dates[current_sd])+i > 0:
 					new_start_dates[current_sd] = int(self.start_dates[current_sd])+i
@@ -65,38 +68,42 @@ class LocalSearch:
 	#	On calcule tous les arrangements possible dans l'ensemble des dates de départ
 	#	On intensifie à partir de ces dates des départ
 	def diversification(self):
+
 		current_best_solution = {}
 		current_best_solution["start_dates"] = self.start_dates.copy()
 		current_best_solution["rates"] = self.rates.copy()
 		current_best_solution["value"] = Simulator(self.evacuation_info, self.graph, self.start_dates, self.rates).simulate()
 		
 
+		cpt = 0
 		for arr in itertools.permutations(self.start_dates.values()):
-			i = 0
-			temp_start_dates = self.start_dates
+			if cpt < self.MAX_TRIES:
+				cpt += 1
+				i = 0
+				temp_start_dates = self.start_dates
 
-			for sd in self.start_dates:
-				temp_start_dates[sd] = arr[i]
-				i += 1
+				for sd in self.start_dates:
+					temp_start_dates[sd] = arr[i]
+					i += 1
 
-			new_value = LocalSearch(self.evacuation_info, self.graph, temp_start_dates, self.rates).intensification()
+				new_value = LocalSearch(self.evacuation_info, self.graph, temp_start_dates, self.rates).intensification()
 
-			# verification de la validité de la solution
-			infos_solution = {}
-			infos_solution["objectif"] = new_value["value"]
-			infos_solution["evacuation_plan"] = []
-			for sd in new_value["start_dates"]:
-				infos_solution["evacuation_plan"].append({
-					'id_node':sd,
-					'evacuation_rate':new_value["rates"][sd],
-					'start_date':new_value["start_dates"][sd]
-					})
+				# verification de la validité de la solution
+				infos_solution = {}
+				infos_solution["objectif"] = new_value["value"]
+				infos_solution["evacuation_plan"] = []
+				for sd in new_value["start_dates"]:
+					infos_solution["evacuation_plan"].append({
+						'id_node':sd,
+						'evacuation_rate':new_value["rates"][sd],
+						'start_date':new_value["start_dates"][sd]
+						})
 
-			if Checker(self.evacuation_info, self.graph, infos_solution).check():
-				if new_value["value"] < current_best_solution["value"]:
+				if Checker(self.evacuation_info, self.graph, infos_solution).check():
+					if new_value["value"] < current_best_solution["value"]:
 
-					current_best_solution["start_dates"] = new_value["start_dates"].copy()
-					current_best_solution["rates"] = new_value["rates"].copy()
-					current_best_solution["value"] = new_value["value"]
-			
+						current_best_solution["start_dates"] = new_value["start_dates"].copy()
+						current_best_solution["rates"] = new_value["rates"].copy()
+						current_best_solution["value"] = new_value["value"]
+				
 		return current_best_solution
